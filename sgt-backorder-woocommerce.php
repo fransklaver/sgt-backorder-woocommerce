@@ -71,30 +71,65 @@ function sgt_add_custom_general_fields_save($post_id)
 		update_post_meta($post_id, '_sgt_bulk_amount', esc_attr($bulk_amount));
 }
 
+function sgt_something_wrong($bulk_amount, $stock)
+{
+	return empty($bulk_amount) || $bulk_amount == '0' || $stock > 0;
+}
+
+function sgt_add_back_order_page_line($post)
+{
+	$title = get_the_title($post->ID);
+	$bulk_amount = get_post_meta($post->ID, '_sgt_bulk_amount', true);
+	$stock = get_post_meta($post->ID, '_stock', true);
+	$back_order = -$stock;
+
+	?><tr <?php
+	if (sgt_something_wrong($bulk_amount, $stock)) {
+		?> style="background: red" <?php
+	}
+	?>><?php
+
+	if (sgt_something_wrong($bulk_amount, $stock)) {
+		$back_order = 0;
+	} else {
+		$back_order = ceil(-$stock / $bulk_amount);
+	}
+?>
+	<td><?php echo $title; ?></td>
+	<td><?php echo $back_order; ?></td>
+	<td><?php echo $bulk_amount; ?></td>
+	<td><?php echo $back_order; ?></td>
+	</tr><?php
+}
+
 function add_back_order_page()
 {
+	echo '<div class="wrap">';
 	$args = array(
 		'post_type' => 'product'
 	);
 	$loop = new WP_Query($args);
 	$product_count = $loop->post_count;
 	if ($loop->have_posts()) {
+?><form method="post" <?php echo 'action="'.plugin_dir_url(__FILE__).'save_back_order.php"'; ?>><table class="form-table">
+<thead>
+	<th><?php _e('Product', 'sgt-backorder-woocommerce'); ?></th>
+	<th><?php _e('Back order', 'sgt-backorder-woocommerce');?></th>
+	<th><?php _e('Bulk amount', 'sgt-backorder-woocommerce');?></th>
+	<th><?php _e('Total bulk', 'sgt-backorder-woocommerce'); ?></th>
+</thead>
+<tbody><?php
 		while ($loop->have_posts()) {
-			$post = $loop->next_post();
-			$title = get_the_title($post->ID);
-			$bulk_amount = get_post_meta($post->ID, '_sgt_bulk_amount', true);
-			$stock = get_post_meta($post->ID, '_stock', true);
-
-			echo '<p ';
-			if (empty($bulk_amount) || $bulk_amount == '0' || $stock > 0) {
-				echo 'style="color:red"';
-				$back_order = 0;
-			} else {
-				$back_order = ceil(-$stock / $bulk_amount);
-			}
-
-			echo '>'.$title.' back order = '.$back_order.' ('.$stock.'/'.$bulk_amount.')</p>';
+			sgt_add_back_order_page_line($loop->next_post());
 		}
+?></tbody>
+</table>
+	<?php submit_button(); ?>
+</form>
+<?php
+	} else {
+		_e('No orders this week', 'sgt-backorder-woocommerce');
 	}
+	echo '</div>';
 }
 ?>
