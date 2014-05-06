@@ -96,7 +96,7 @@ function sgt_add_back_order_page_line($post)
 		$back_order = ceil(-$stock / $bulk_amount);
 	}
 ?>
-	<td><?php echo $title; ?></td>
+	<td><a class="row-title" href="<?php echo get_edit_post_link($post->ID, '&'); ?>"><?php echo $title; ?></a></td>
 	<td><?php echo $back_order; ?></td>
 	<td><?php echo $bulk_amount; ?></td>
 	<td><?php echo $back_order; ?></td>
