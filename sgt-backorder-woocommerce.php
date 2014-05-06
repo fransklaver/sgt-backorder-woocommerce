@@ -75,13 +75,15 @@ function sgt_something_wrong($post)
 {
 	$bulk_amount = get_post_meta($post->ID, '_sgt_bulk_amount', true);
 	$stock = get_post_meta($post->ID, '_stock', true);
+	$sku = get_post_meta($post->ID, '_sku', true);
 
-	return empty($bulk_amount) || $bulk_amount == '0' || $stock > 0;
+	return empty($sku) || empty($bulk_amount) || $bulk_amount == '0' || $stock > 0;
 }
 
 function sgt_add_back_order_page_line($post)
 {
 	$title = get_the_title($post->ID);
+	$sku = get_post_meta($post->ID, '_sku', true);
 	$bulk_amount = get_post_meta($post->ID, '_sgt_bulk_amount', true);
 	$stock = get_post_meta($post->ID, '_stock', true);
 	$back_order = -$stock;
@@ -100,6 +102,7 @@ function sgt_add_back_order_page_line($post)
 	}
 ?>
 	<td><a class="row-title" href="<?php echo get_edit_post_link($post->ID, '&'); ?>"><?php echo $title; ?></a></td>
+	<td><?php echo $sku; ?></td>
 	<td><?php echo $back_order; ?></td>
 	<td><?php echo $bulk_amount; ?></td>
 	<td><input type="number" min="0" name="back_order[<?php echo $post->ID; ?>]"value="<?php echo $back_order; ?>" /></td>
@@ -120,6 +123,7 @@ function add_back_order_page()
 ?><form method="post" <?php echo 'action="'.plugin_dir_url(__FILE__).'save_back_order.php"'; ?>><table class="form-table">
 <thead>
 	<th><?php _e('Product', 'sgt-backorder-woocommerce'); ?></th>
+	<th><?php _e('SKU'); ?></th>
 	<th><?php _e('Back order', 'sgt-backorder-woocommerce');?></th>
 	<th><?php _e('Bulk amount', 'sgt-backorder-woocommerce');?></th>
 	<th><?php _e('Total bulk', 'sgt-backorder-woocommerce'); ?></th>
