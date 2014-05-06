@@ -99,7 +99,7 @@ function sgt_add_back_order_page_line($post)
 	<td><a class="row-title" href="<?php echo get_edit_post_link($post->ID, '&'); ?>"><?php echo $title; ?></a></td>
 	<td><?php echo $back_order; ?></td>
 	<td><?php echo $bulk_amount; ?></td>
-	<td><?php echo $back_order; ?></td>
+	<td><input type="number" min="0" name="back_order[<?php echo $post->ID; ?>]"value="<?php echo $back_order; ?>" /></td>
 	</tr><?php
 	return $something_wrong;
 }
