@@ -121,7 +121,7 @@ function add_back_order_page()
 	<th><?php _e('Bulk amount', 'sgt-backorder-woocommerce');?></th>
 	<th><?php _e('Total bulk', 'sgt-backorder-woocommerce'); ?></th>
 </thead>
-<tbody><?php
+<tbody id="the-list"><?php
 		while ($loop->have_posts()) {
 			$something_wrong |= sgt_add_back_order_page_line($loop->next_post());
 		}
