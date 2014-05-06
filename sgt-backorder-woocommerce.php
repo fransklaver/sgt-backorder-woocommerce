@@ -83,8 +83,9 @@ function sgt_add_back_order_page_line($post)
 	$stock = get_post_meta($post->ID, '_stock', true);
 	$back_order = -$stock;
 
+	$something_wrong = sgt_something_wrong($bulk_amount, $stock);
 	?><tr <?php
-	if (sgt_something_wrong($bulk_amount, $stock)) {
+	if ($something_wrong) {
 		?> style="background: red" <?php
 	}
 	?>><?php
@@ -100,6 +101,7 @@ function sgt_add_back_order_page_line($post)
 	<td><?php echo $bulk_amount; ?></td>
 	<td><?php echo $back_order; ?></td>
 	</tr><?php
+	return $something_wrong;
 }
 
 function add_back_order_page()
@@ -111,6 +113,7 @@ function add_back_order_page()
 	$loop = new WP_Query($args);
 	$product_count = $loop->post_count;
 	if ($loop->have_posts()) {
+		$something_wrong = false;
 ?><form method="post" <?php echo 'action="'.plugin_dir_url(__FILE__).'save_back_order.php"'; ?>><table class="form-table">
 <thead>
 	<th><?php _e('Product', 'sgt-backorder-woocommerce'); ?></th>
@@ -120,11 +123,15 @@ function add_back_order_page()
 </thead>
 <tbody><?php
 		while ($loop->have_posts()) {
-			sgt_add_back_order_page_line($loop->next_post());
+			$something_wrong |= sgt_add_back_order_page_line($loop->next_post());
 		}
 ?></tbody>
 </table>
-	<?php submit_button(); ?>
+	<?php
+		if ($something_wrong)
+			_e('Errors were detected, you may want to fix them first', 'sgt-backorder-woocommerce');
+		submit_button(__('Create back order', 'sgt-backorder-woocommerce'), 'primary', 'generate_back_order_button');
+	?>
 </form>
 <?php
 	} else {
