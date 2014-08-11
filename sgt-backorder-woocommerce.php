@@ -71,8 +71,11 @@ function sgt_add_custom_general_fields_save($post_id)
 		update_post_meta($post_id, '_sgt_bulk_amount', esc_attr($bulk_amount));
 }
 
-function sgt_something_wrong($bulk_amount, $stock)
+function sgt_something_wrong($post)
 {
+	$bulk_amount = get_post_meta($post->ID, '_sgt_bulk_amount', true);
+	$stock = get_post_meta($post->ID, '_stock', true);
+
 	return empty($bulk_amount) || $bulk_amount == '0' || $stock > 0;
 }
 
@@ -83,7 +86,7 @@ function sgt_add_back_order_page_line($post)
 	$stock = get_post_meta($post->ID, '_stock', true);
 	$back_order = -$stock;
 
-	$something_wrong = sgt_something_wrong($bulk_amount, $stock);
+	$something_wrong = sgt_something_wrong($post);
 	?><tr <?php
 	if ($something_wrong) {
 		?> style="background: red" <?php
