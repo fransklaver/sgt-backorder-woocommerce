@@ -95,7 +95,7 @@ function sgt_add_back_order_page_line($post)
 	}
 	?>><?php
 
-	if (sgt_something_wrong($bulk_amount, $stock)) {
+	if ($something_wrong) {
 		$back_order = 0;
 	} else {
 		$back_order = ceil(-$stock / $bulk_amount);
