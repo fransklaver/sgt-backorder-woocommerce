@@ -114,7 +114,8 @@ function add_back_order_page()
 {
 	echo '<div class="wrap">';
 	$args = array(
-		'post_type' => 'product'
+		'post_type' => 'product',
+		'posts_per_page' => -1
 	);
 	$loop = new WP_Query($args);
 	$product_count = $loop->post_count;
