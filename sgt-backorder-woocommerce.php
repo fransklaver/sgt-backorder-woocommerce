@@ -36,6 +36,18 @@ if (is_admin())
 
 	add_action( 'woocommerce_product_options_general_product_data', 'sgt_add_custom_general_fields' );
 	add_action( 'woocommerce_process_product_meta', 'sgt_add_custom_general_fields_save' );
+
+	add_action('init', 'store_backorder');
+}
+
+function store_backorder()
+{
+	if (isset($_POST["store_backorder"]) && $_POST["store_backorder"] == '1') {
+		$bulk_order = $_POST['back_order'];
+		foreach ($bulk_order as $post_id => $b) {
+			echo get_the_title($post_id).': '.$b . '<br/>';
+		}
+	}
 }
 
 function add_generate_back_order_menu()
@@ -121,7 +133,8 @@ function add_back_order_page()
 	$product_count = $loop->post_count;
 	if ($loop->have_posts()) {
 		$something_wrong = false;
-?><form method="post" <?php echo 'action="'.plugin_dir_url(__FILE__).'save_back_order.php"'; ?>><table class="form-table">
+?><form method="post" action=""><table class="form-table">
+	<input type="hidden" name="store_backorder" value="1" />
 <thead>
 	<th><?php _e('Product', 'sgt-backorder-woocommerce'); ?></th>
 	<th><?php _e('SKU'); ?></th>
