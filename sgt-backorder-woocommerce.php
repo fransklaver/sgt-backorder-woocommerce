@@ -36,18 +36,19 @@ if (is_admin())
 
 	add_action( 'woocommerce_product_options_general_product_data', 'sgt_add_custom_general_fields' );
 	add_action( 'woocommerce_process_product_meta', 'sgt_add_custom_general_fields_save' );
-
-	add_action('init', 'store_backorder');
 }
 
 function store_backorder()
 {
-	if (isset($_POST["store_backorder"]) && $_POST["store_backorder"] == '1') {
-		$bulk_order = $_POST['back_order'];
-		foreach ($bulk_order as $post_id => $b) {
-			echo get_the_title($post_id).': '.$b . '<br/>';
-		}
+	if (!isset($_POST["store_backorder"]) || $_POST["store_backorder"} != 1)
+		return false;
+
+	$bulk_order = $_POST['back_order'];
+	foreach ($bulk_order as $post_id => $b) {
+		$sku = get_post_meta($post_id, '_sku', true);
+		echo get_the_title($post_id).' ('.$sku.'): ' . $b . '<br/>';
 	}
+	return true;
 }
 
 function add_generate_back_order_menu()
@@ -122,9 +123,8 @@ function sgt_add_back_order_page_line($post)
 	return $something_wrong;
 }
 
-function add_back_order_page()
+function show_backorder_page()
 {
-	echo '<div class="wrap">';
 	$args = array(
 		'post_type' => 'product',
 		'posts_per_page' => -1
@@ -158,6 +158,13 @@ function add_back_order_page()
 	} else {
 		_e('No orders this week', 'sgt-backorder-woocommerce');
 	}
+}
+
+function add_back_order_page()
+{
+	echo '<div class="wrap">';
+	if (!store_backorder())
+		show_backorder_page();
 	echo '</div>';
 }
 ?>
