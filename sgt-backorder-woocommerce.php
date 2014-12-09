@@ -38,6 +38,11 @@ if (is_admin())
 	add_action( 'woocommerce_process_product_meta', 'sgt_add_custom_general_fields_save' );
 }
 
+function get_sku($post_id)
+{
+	return get_post_meta($post_id, '_sku', true);
+}
+
 function store_backorder()
 {
 	if (!isset($_POST["store_backorder"]) || $_POST["store_backorder"} != 1)
@@ -88,7 +93,7 @@ function sgt_something_wrong($post)
 {
 	$bulk_amount = get_post_meta($post->ID, '_sgt_bulk_amount', true);
 	$stock = get_post_meta($post->ID, '_stock', true);
-	$sku = get_post_meta($post->ID, '_sku', true);
+	$sku = get_sku($post->ID);
 
 	return empty($sku) || empty($bulk_amount) || $bulk_amount == '0' || $stock > 0;
 }
@@ -96,7 +101,7 @@ function sgt_something_wrong($post)
 function sgt_add_back_order_page_line($post)
 {
 	$title = get_the_title($post->ID);
-	$sku = get_post_meta($post->ID, '_sku', true);
+	$sku = get_sku($post->ID);
 	$bulk_amount = get_post_meta($post->ID, '_sgt_bulk_amount', true);
 	$stock = get_post_meta($post->ID, '_stock', true);
 	$back_order = -$stock;
