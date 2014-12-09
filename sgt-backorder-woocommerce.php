@@ -43,15 +43,23 @@ function get_sku($post_id)
 	return get_post_meta($post_id, '_sku', true);
 }
 
+function sort_orders($lhs, $rhs)
+{
+	return strcasecmp(get_sku($lhs['post_id']), get_sku($rhs['post_id']));
+}
+
 function store_backorder()
 {
 	if (!isset($_POST["store_backorder"]) || $_POST["store_backorder"} != 1)
 		return false;
 
 	$bulk_order = $_POST['back_order'];
-	foreach ($bulk_order as $post_id => $b) {
-		$sku = get_post_meta($post_id, '_sku', true);
-		echo get_the_title($post_id).' ('.$sku.'): ' . $b . '<br/>';
+	usort($bulk_order, 'sort_orders');
+	foreach ($bulk_order as $b) {
+		$post_id = $b['post_id'];
+		$amount = $b['amount'];
+		$sku = get_sku($post_id);
+		echo get_the_title($post_id).' ('.$sku.'): ' . $amount . '<br/>';
 	}
 	return true;
 }
@@ -98,7 +106,7 @@ function sgt_something_wrong($post)
 	return empty($sku) || empty($bulk_amount) || $bulk_amount == '0' || $stock > 0;
 }
 
-function sgt_add_back_order_page_line($post)
+function sgt_add_back_order_page_line($post, $line_id)
 {
 	$title = get_the_title($post->ID);
 	$sku = get_sku($post->ID);
@@ -119,11 +127,13 @@ function sgt_add_back_order_page_line($post)
 		$back_order = ceil($back_order / $bulk_amount);
 	}
 ?>
+	<input type="hidden" name="back_order[<?php echo $line_id; ?>][post_id]"
+			value="<?php echo $post->ID; ?>" />
 	<td><a class="row-title" href="<?php echo get_edit_post_link($post->ID, '&'); ?>"><?php echo $title; ?></a></td>
 	<td><?php echo $sku; ?></td>
 	<td><?php echo $back_order; ?></td>
 	<td><?php echo $bulk_amount; ?></td>
-	<td><input type="number" min="0" name="back_order[<?php echo $post->ID; ?>]"value="<?php echo $back_order; ?>" /></td>
+	<td><input type="number" min="0" name="back_order[<?php echo $line_id; ?>][value]"value="<?php echo $back_order; ?>" /></td>
 	</tr><?php
 	return $something_wrong;
 }
@@ -136,6 +146,7 @@ function show_backorder_page()
 	);
 	$loop = new WP_Query($args);
 	$product_count = $loop->post_count;
+	$line_id = 0;
 	if ($loop->have_posts()) {
 		$something_wrong = false;
 ?><form method="post" action=""><table class="form-table">
@@ -149,7 +160,7 @@ function show_backorder_page()
 </thead>
 <tbody id="the-list"><?php
 		while ($loop->have_posts()) {
-			$something_wrong |= sgt_add_back_order_page_line($loop->next_post());
+			$something_wrong |= sgt_add_back_order_page_line($loop->next_post(), $line_id++);
 		}
 ?></tbody>
 </table>
