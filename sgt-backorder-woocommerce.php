@@ -50,7 +50,7 @@ function sort_orders($lhs, $rhs)
 
 function store_backorder()
 {
-	if (!isset($_POST["store_backorder"]) || $_POST["store_backorder"} != 1)
+	if (!isset($_POST["store_backorder"]) || $_POST["store_backorder"] != 1)
 		return false;
 
 	$bulk_order = $_POST['back_order'];
