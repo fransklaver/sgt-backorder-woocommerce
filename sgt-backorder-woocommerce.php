@@ -190,7 +190,10 @@ function show_backorder_page()
 </thead>
 <tbody id="the-list"><?php
 		while ($loop->have_posts()) {
-			$something_wrong |= sgt_add_back_order_page_line($loop->next_post(), $line_id++);
+			$post = $loop->next_post();
+			if ($post->post_status != 'publish')
+				continue;
+			$something_wrong |= sgt_add_back_order_page_line($post, $line_id++);
 		}
 ?></tbody>
 </table>
