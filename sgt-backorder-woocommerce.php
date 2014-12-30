@@ -65,6 +65,16 @@ function sgt_add_custom_general_fields()
 	if (empty($bulk_amount))
 		$bulk_amount = '0';
 
+	woocommerce_wp_select(
+		array(
+			'id'          => '_sgt_product_unit',
+			'label'       => __('Unit', 'sgt-backorder-woocommerce'),
+			'desc_tip'    => true,
+			'description' => __('Select the unit for this item', 'sgt-backorder-woocommerce'),
+			'options'     => array('pieces', 'grams')
+		)
+	);
+
 	woocommerce_wp_text_input(
 		array(
 			'id'          => '_sgt_bulk_amount',
@@ -76,6 +86,38 @@ function sgt_add_custom_general_fields()
 			'custom_attributes' => array('step' => 'any', 'min' => '0')
 		)
 	);
+
+	$sale_amount = get_post_meta($post->ID, '_sgt_sale_amount', true);
+	if (empty($sale_amount))
+		$sale_amount = '1';
+
+	woocommerce_wp_text_input(
+		array(
+			'id'          => '_sgt_sale_amount',
+			'label'       => __('Sale amount', 'sgt-backorder-woocommerce'),
+			'placeholder' => $sale_amount,
+			'desc_tip'    => 'true',
+			'description' => __('Fill in how many items are sold in one go', 'sgt-backorder-woocommerce'),
+			'type'        => 'number',
+			'custom_attributes' => array('step' => 'any', 'min' => '0')
+		)
+	);
+
+	$division_amount = get_post_meta($post->ID, '_sgt_division_amount', true);
+	if (empty($division_amount))
+		$division_amount = '1';
+
+	woocommerce_wp_text_input(
+		array(
+			'id'          => '_sgt_division_amount',
+			'label'       => __('Division amount', 'sgt-backorder-woocommerce'),
+			'placeholder' => $division_amount,
+			'desc_tip'    => 'true',
+			'description' => __('Fill in how many items are used to split the difference', 'sgt-backorder-woocommerce'),
+			'type'        => 'number',
+			'custom_attributes' => array('step' => 'any', 'min' => '0')
+		)
+	);
 }
 
 function sgt_add_custom_general_fields_save($post_id)
@@ -83,5 +125,14 @@ function sgt_add_custom_general_fields_save($post_id)
 	$bulk_amount = $_POST['_sgt_bulk_amount'];
 	if (!empty($bulk_amount))
 		update_post_meta($post_id, '_sgt_bulk_amount', esc_attr($bulk_amount));
+	$sale_amount = $_POST['_sgt_sale_amount'];
+	if (!empty($sale_amount))
+		update_post_meta($post_id, '_sgt_sale_amount', esc_attr($sale_amount));
+	$division_amount = $_POST['_sgt_division_amount'];
+	if (!empty($division_amount))
+		update_post_meta($post_id, '_sgt_division_amount', esc_attr($division_amount));
+	$product_unit = $_POST['_sgt_product_unit'];
+	if (!empty($product_unit))
+		update_post_meta($post_id, '_sgt_product_unit', esc_attr($product_unit));
 }
 ?>
