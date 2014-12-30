@@ -30,6 +30,7 @@ if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get
 
 require('generatebackorderpage.php');
 require('storebackorderpage.php');
+require('resetstorepage.php');
 
 load_plugin_textdomain('sgt-backorder-woocommerce', false, basename(dirname(__FILE__)).'/languages/');
 
@@ -49,28 +50,6 @@ function get_sku($post_id)
 function sort_orders($lhs, $rhs)
 {
 	return strcasecmp(get_sku($lhs['post_id']), get_sku($rhs['post_id']));
-}
-
-function reset_store()
-{
-	if (!isset($_POST["reset_store"]) || $_POST["reset_store"] != 1)
-		return false;
-
-	$args = array(
-		'post_type' => 'product',
-		'posts_per_page' => -1
-	);
-	$loop = new WP_Query($args);
-	while ($loop->have_posts()) {
-		$post = $loop->next_post();
-		$product = wc_get_product($post->ID);
-		$product->set_stock(0);
-		wp_update_post(array(
-			'ID' => $post->ID,
-			'post_status' => 'private',
-		));
-	}
-	return true;
 }
 
 function add_generate_back_order_menu()
