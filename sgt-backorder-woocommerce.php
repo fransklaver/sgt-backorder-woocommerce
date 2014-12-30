@@ -61,6 +61,36 @@ function store_backorder()
 		$sku = get_sku($post_id);
 		echo get_the_title($post_id).' ('.$sku.'): ' . $amount . '<br/>';
 	}
+?>
+<form method="post" action="">
+	<input type="hidden" name="reset_store" value="1" />
+<?php
+	submit_button(__('Reset store', 'sgt-backorder-woocommerce'), 'primary', 'clear_store_button');
+?>
+</form>
+<?php
+	return true;
+}
+
+function reset_store()
+{
+	if (!isset($_POST["reset_store"]) || $_POST["reset_store"] != 1)
+		return false;
+
+	$args = array(
+		'post_type' => 'product',
+		'posts_per_page' => -1
+	);
+	$loop = new WP_Query($args);
+	while ($loop->have_posts()) {
+		$post = $loop->next_post();
+		$product = wc_get_product($post->ID);
+		$product->set_stock(0);
+		wp_update_post(array(
+			'ID' => $post->ID,
+			'post_status' => 'private',
+		));
+	}
 	return true;
 }
 
@@ -179,6 +209,8 @@ function show_backorder_page()
 function add_back_order_page_fill_div()
 {
 	if (store_backorder())
+		return;
+	if (reset_store())
 		return;
 	show_backorder_page();
 }
