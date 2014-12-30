@@ -24,9 +24,9 @@ function sgt_add_back_order_page_line($post, $line_id)
 	?>><?php
 
 	if ($something_wrong) {
-		$back_order = 0;
+		$bulk_order = 0;
 	} else {
-		$back_order = ceil($back_order / $bulk_amount);
+		$bulk_order = ceil($back_order / $bulk_amount);
 	}
 ?>
 	<input type="hidden" name="back_order[<?php echo $line_id; ?>][post_id]"
@@ -35,7 +35,7 @@ function sgt_add_back_order_page_line($post, $line_id)
 	<td><?php echo $sku; ?></td>
 	<td><?php echo $back_order; ?></td>
 	<td><?php echo $bulk_amount; ?></td>
-	<td><input type="number" min="0" name="back_order[<?php echo $line_id; ?>][amount]"value="<?php echo $back_order; ?>" /></td>
+	<td><input type="number" min="0" name="back_order[<?php echo $line_id; ?>][amount]"value="<?php echo $bulk_order; ?>" /></td>
 	</tr><?php
 	return $something_wrong;
 }
