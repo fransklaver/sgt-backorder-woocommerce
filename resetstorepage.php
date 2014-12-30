@@ -19,6 +19,7 @@ function reset_store()
 			'post_status' => 'private',
 		));
 	}
+	echo __('Store has been reset<br />', 'sgt-backorder-woocommerce');
 	return true;
 }
 ?>
