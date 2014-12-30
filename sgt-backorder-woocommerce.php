@@ -176,11 +176,17 @@ function show_backorder_page()
 	}
 }
 
+function add_back_order_page_fill_div()
+{
+	if (store_backorder())
+		return;
+	show_backorder_page();
+}
+
 function add_back_order_page()
 {
 	echo '<div class="wrap">';
-	if (!store_backorder())
-		show_backorder_page();
+	add_back_order_page_fill_div();
 	echo '</div>';
 }
 ?>
