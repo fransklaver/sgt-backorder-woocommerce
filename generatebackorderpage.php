@@ -13,6 +13,9 @@ function sgt_add_back_order_page_line($post, $line_id)
 	$title = get_the_title($post->ID);
 	$sku = get_sku($post->ID);
 	$bulk_amount = get_post_meta($post->ID, '_sgt_bulk_amount', true);
+	$sale_amount = get_post_meta($post->ID, '_sgt_sale_amount', true);
+	$bulk_amount = $bulk_amount / $sale_amount;
+
 	$stock = get_post_meta($post->ID, '_stock', true);
 	$back_order = -$stock;
 
