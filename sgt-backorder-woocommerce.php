@@ -29,6 +29,7 @@ if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get
 	exit;
 
 require('generatebackorderpage.php');
+require('storebackorderpage.php');
 
 load_plugin_textdomain('sgt-backorder-woocommerce', false, basename(dirname(__FILE__)).'/languages/');
 
@@ -48,30 +49,6 @@ function get_sku($post_id)
 function sort_orders($lhs, $rhs)
 {
 	return strcasecmp(get_sku($lhs['post_id']), get_sku($rhs['post_id']));
-}
-
-function store_backorder()
-{
-	if (!isset($_POST["store_backorder"]) || $_POST["store_backorder"] != 1)
-		return false;
-
-	$bulk_order = $_POST['back_order'];
-	usort($bulk_order, 'sort_orders');
-	foreach ($bulk_order as $b) {
-		$post_id = $b['post_id'];
-		$amount = $b['amount'];
-		$sku = get_sku($post_id);
-		echo get_the_title($post_id).' ('.$sku.'): ' . $amount . '<br/>';
-	}
-?>
-<form method="post" action="">
-	<input type="hidden" name="reset_store" value="1" />
-<?php
-	submit_button(__('Reset store', 'sgt-backorder-woocommerce'), 'primary', 'clear_store_button');
-?>
-</form>
-<?php
-	return true;
 }
 
 function reset_store()
