@@ -3,7 +3,7 @@
 * Plugin Name: Backorder for WooCommerce
 * Plugin URI: https://github.com/fransklaver/sgt-backorder-woocommerce
 * Description: A plugin generating backorders from WooCommerce orders
-* Version: 0.1.0
+* Version: 0.1.1
 * Author: Frans Klaver
 * Author URI: https://github.com/fransklaver
 * License: GPL2
