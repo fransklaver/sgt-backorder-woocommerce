@@ -8,7 +8,7 @@ function sgt_something_wrong($product_id)
 	return empty($sku) || empty($bulk_amount) || $bulk_amount == '0' || $stock > 0;
 }
 
-function sgt_add_back_order_page_line($product_id, $line_id)
+function sgt_add_back_order_page_line($product_id, $back_order, $line_id)
 {
 	$title = get_the_title($product_id);
 	$sku = get_sku($product_id);
@@ -16,9 +16,6 @@ function sgt_add_back_order_page_line($product_id, $line_id)
 	$sale_amount = get_post_meta($product_id, '_sgt_sale_amount', true);
 	if ($sale_amount)
 		$bulk_amount = $bulk_amount / $sale_amount;
-
-	$stock = get_post_meta($product_id, '_stock', true);
-	$back_order = -$stock;
 
 	$something_wrong = sgt_something_wrong($product_id);
 	?><tr <?php
@@ -46,14 +43,32 @@ function sgt_add_back_order_page_line($product_id, $line_id)
 
 function show_backorder_page()
 {
-	$args = array(
-		'post_type' => 'product',
-		'posts_per_page' => -1
-	);
-	$loop = new WP_Query($args);
-	$product_count = $loop->post_count;
+	$orders = get_posts(array(
+			'post_type' => 'shop_order',
+			'posts_per_page' => -1,
+			'post_status' => array('wc-on-hold', 'wc-processing')
+			));
+
+	$products = array();
+	foreach ($orders as $order_id) {
+		$order = new WC_Order($order_id);
+		$items = $order->get_items();
+		foreach ($items as $v) {
+			$product_id = $v['item_meta']['_product_id'][0];
+			$quantity = $v['item_meta']['_qty'][0];
+
+			$pid = (string)$product_id;
+			if (array_key_exists($pid, $products))
+				$products[$pid] += $quantity;
+			else
+				$products[$pid] = $quantity;
+		}
+	}
+
+	$product_count = count($products);
 	$line_id = 0;
-	if ($loop->have_posts()) {
+
+	if ($product_count) {
 		$something_wrong = false;
 ?><form method="post" action=""><table class="form-table">
 	<input type="hidden" name="store_backorder" value="1" />
@@ -65,11 +80,8 @@ function show_backorder_page()
 	<th><?php _e('Total bulk', 'sgt-backorder-woocommerce'); ?></th>
 </thead>
 <tbody id="the-list"><?php
-		while ($loop->have_posts()) {
-			$post = $loop->next_post();
-			if ($post->post_status != 'publish')
-				continue;
-			$something_wrong |= sgt_add_back_order_page_line($post->ID, $line_id++);
+		foreach ($products as $product_id => $v) {
+			$something_wrong |= sgt_add_back_order_page_line($product_id, $v, $line_id++);
 		}
 ?></tbody>
 </table>
