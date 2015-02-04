@@ -1,26 +1,26 @@
 <?php
-function sgt_something_wrong($post)
+function sgt_something_wrong($post_id)
 {
-	$bulk_amount = get_post_meta($post->ID, '_sgt_bulk_amount', true);
-	$stock = get_post_meta($post->ID, '_stock', true);
-	$sku = get_sku($post->ID);
+	$bulk_amount = get_post_meta($post_id, '_sgt_bulk_amount', true);
+	$stock = get_post_meta($post_id, '_stock', true);
+	$sku = get_sku($post_id);
 
 	return empty($sku) || empty($bulk_amount) || $bulk_amount == '0' || $stock > 0;
 }
 
-function sgt_add_back_order_page_line($post, $line_id)
+function sgt_add_back_order_page_line($post_id, $line_id)
 {
-	$title = get_the_title($post->ID);
-	$sku = get_sku($post->ID);
-	$bulk_amount = get_post_meta($post->ID, '_sgt_bulk_amount', true);
-	$sale_amount = get_post_meta($post->ID, '_sgt_sale_amount', true);
+	$title = get_the_title($post_id);
+	$sku = get_sku($post_id);
+	$bulk_amount = get_post_meta($post_id, '_sgt_bulk_amount', true);
+	$sale_amount = get_post_meta($post_id, '_sgt_sale_amount', true);
 	if ($sale_amount)
 		$bulk_amount = $bulk_amount / $sale_amount;
 
-	$stock = get_post_meta($post->ID, '_stock', true);
+	$stock = get_post_meta($post_id, '_stock', true);
 	$back_order = -$stock;
 
-	$something_wrong = sgt_something_wrong($post);
+	$something_wrong = sgt_something_wrong($post_id);
 	?><tr <?php
 	if ($something_wrong) {
 		?> style="background: red" <?php
@@ -34,8 +34,8 @@ function sgt_add_back_order_page_line($post, $line_id)
 	}
 ?>
 	<input type="hidden" name="back_order[<?php echo $line_id; ?>][post_id]"
-			value="<?php echo $post->ID; ?>" />
-	<td><a class="row-title" href="<?php echo get_edit_post_link($post->ID, '&'); ?>"><?php echo $title; ?></a></td>
+			value="<?php echo $post_id; ?>" />
+	<td><a class="row-title" href="<?php echo get_edit_post_link($post_id, '&'); ?>"><?php echo $title; ?></a></td>
 	<td><?php echo $sku; ?></td>
 	<td><?php echo $back_order; ?></td>
 	<td><?php echo $bulk_amount; ?></td>
@@ -69,7 +69,7 @@ function show_backorder_page()
 			$post = $loop->next_post();
 			if ($post->post_status != 'publish')
 				continue;
-			$something_wrong |= sgt_add_back_order_page_line($post, $line_id++);
+			$something_wrong |= sgt_add_back_order_page_line($post->ID, $line_id++);
 		}
 ?></tbody>
 </table>
