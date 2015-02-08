@@ -74,7 +74,7 @@ function show_backorder_page()
 	<input type="hidden" name="store_backorder" value="1" />
 <thead>
 	<th><?php _e('Product', 'sgt-backorder-woocommerce'); ?></th>
-	<th><?php _e('SKU'); ?></th>
+	<th><?php _e('SKU', 'sgt-backorder-woocommerce'); ?></th>
 	<th><?php _e('Back order', 'sgt-backorder-woocommerce');?></th>
 	<th><?php _e('Bulk amount', 'sgt-backorder-woocommerce');?></th>
 	<th><?php _e('Total bulk', 'sgt-backorder-woocommerce'); ?></th>
