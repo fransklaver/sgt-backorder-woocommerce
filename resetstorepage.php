@@ -17,6 +17,18 @@ function reset_store()
 			'post_status' => 'private',
 		));
 	}
+
+	$orders = get_posts(array(
+			'post_type' => 'shop_order',
+			'posts_per_page' => -1,
+			'post_status' => array('wc-on-hold', 'wc-processing')
+		));
+	foreach ($orders as $post) {
+		wp_update_post(array(
+			'ID' => $post->ID,
+			'post_status' => 'wc-completed'
+		));
+	}
 	_e('Store has been reset', 'sgt-backorder-woocommerce');
 	echo '<br/>';
 	return true;
