@@ -23,7 +23,7 @@ msgstr "Bestelnummer"
 
 #: generatebackorderpage.php:78
 msgid "Back order"
-msgstr "Backorder"
+msgstr "In bestelling"
 
 #: generatebackorderpage.php:79 sgt-backorder-woocommerce.php:81
 msgid "Bulk amount"
@@ -31,7 +31,7 @@ msgstr "Bulk hoeveelheid"
 
 #: generatebackorderpage.php:80
 msgid "Total bulk"
-msgstr "Totale bulkhoeveelheid"
+msgstr "Te bestellen bulk"
 
 #: generatebackorderpage.php:90
 msgid "Errors were detected, you may want to fix them first"
